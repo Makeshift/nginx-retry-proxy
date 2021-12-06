@@ -1,4 +1,4 @@
-FROM node:alpine AS build
+FROM node:alpine
 
 WORKDIR /app
 
@@ -6,10 +6,4 @@ COPY . .
 
 RUN npm ci
 
-FROM gcr.io/distroless/nodejs:16
-
-COPY --from=build /app /app
-
-WORKDIR /app
-
-CMD ["index.js"]
+CMD node index.js
