@@ -32,3 +32,10 @@ jobs:
         with:
           push: true
           tags: makeshift27015/nginx-retry-proxy:latest
+
+      - name: Build and push
+        uses: docker/build-push-action@v2.7.0
+        with:
+          push: true
+          tags: makeshift27015/nginx-retry-proxy:phat
+          file: Dockerfile.phat

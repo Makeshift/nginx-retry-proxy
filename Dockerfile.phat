@@ -1,0 +1,12 @@
+# Distroless doesn't work with armhf, and the alpine node armhf image is broken
+# So here's a fat image instead
+
+FROM node
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm ci
+
+CMD npm start
