@@ -1,7 +1,15 @@
-FROM node:alpine
+FROM node:alpine AS build
+
+WORKDIR /app
 
 COPY . .
 
-RUN npm install
+RUN npm ci
 
-CMD npm start
+FROM gcr.io/distroless/nodejs:16
+
+COPY --from=build /app /app
+
+WORKDIR /app
+
+CMD ["index.js"]
