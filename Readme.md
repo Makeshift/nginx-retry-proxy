@@ -46,7 +46,3 @@ server {
 ```
 
 See `default.conf` for the same as above. It gets dropped straight into `/etc/nginx/conf.d/default.conf`.
-
-### Raspberry Pi
-
-The Node alpine image for the Rpi4 is broken, so there's also a docker tag for a fat version of the container that works on the Rpi4, `makeshift27015/nginx-retry-proxy:phat`

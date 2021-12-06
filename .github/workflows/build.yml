@@ -21,6 +21,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: all
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+
+
       - name: Login to DockerHub
         uses: docker/login-action@v1.10.0
         with:
@@ -32,10 +42,5 @@ jobs:
         with:
           push: true
           tags: makeshift27015/nginx-retry-proxy:latest
-
-      - name: Build and push
-        uses: docker/build-push-action@v2.7.0
-        with:
-          push: true
-          tags: makeshift27015/nginx-retry-proxy:phat
-          file: Dockerfile.phat
+          platforms: linux/amd64,linux/arm64,linux/ppc64le
+          builder: ${{ steps.buildx.outputs.name }}
