@@ -50,5 +50,5 @@ jobs:
         with:
           push: true
           tags: makeshift27015/nginx-retry-proxy:latest
-          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8
           builder: ${{ steps.buildx.outputs.name }}

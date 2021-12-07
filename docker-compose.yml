@@ -5,6 +5,12 @@ services:
     build:
       context: .
     image: makeshift27015/nginx-retry-proxy:latest
+    environment:
+      - PORT=8081
+      - HEALTHCHECK_PATH=/health
+      - HTTP_RESPONSE_CODE=301
+      - HTTP_HEADERS="Location:http://example.com, Cache-Control :no-cache"
+      - HEALTHCHECK_REPLIES=3
 
   nginx:
     image: nginx

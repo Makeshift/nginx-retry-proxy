@@ -1,9 +1,21 @@
-FROM node:alpine
+FROM node:alpine as build
 
 WORKDIR /app
 
 COPY . .
 
-RUN npm ci
+RUN yarn global add yarn-tools && \
+  yarn run dedupe && \
+  yarn install --frozen-lockfile --non-interactive --production --link-duplicates
 
-CMD node index.js
+FROM m03geek/alpine-node:femto
+
+COPY --from=build /app /
+
+ENV PORT=8080 \
+  HEALTHCHECK_PATH=/retry-proxy/healthcheck \
+  NODE_ENV=production
+
+HEALTHCHECK CMD ["node", "healthcheck.js"]
+
+CMD ["node", "index.js"]

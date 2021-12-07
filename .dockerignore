@@ -1,3 +1,6 @@
 *
 !index.js
+!server.js
+!healthcheck.js
 !package*.json
+!yarn.lock
