@@ -8,8 +8,8 @@ services:
     environment:
       - PORT=8081
       - HEALTHCHECK_PATH=/health
-      - HTTP_RESPONSE_CODE=301
-      - HTTP_HEADERS="Location:http://example.com, Cache-Control :no-cache"
+      - RESPONSE_HTTP_CODE=301
+      - RESPONSE_HTTP_HEADERS="Location:http://example.com, Cache-Control :no-cache"
       - HEALTHCHECK_REPLIES=3
 
   nginx:

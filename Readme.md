@@ -67,15 +67,20 @@ If set to 0, it will always log out requests.
 
 ### Return Code
 
-By default, the proxy returns a `504 Gateway Timeout`, which is what Nginx also sends by default. This behaviour can be changed with the `HTTP_RESPONSE_CODE` env var.
+By default, the proxy returns a `504 Gateway Timeout`, which is what Nginx also sends by default. This behaviour can be changed with the `RESPONSE_HTTP_CODE` env var.
 
 ### Headers
 
 By default, no additional headers are set (aside from those provided by default by [Fastify](https://www.fastify.io/)). This behaviour can also be changed, and additional headers can be added.
 
-A use-case for this is, for example, setting `HTTP_RESPONSE_CODE` to `301`, then you could set a header containing `Location: https://example.com/` to redirect the request.
+A use-case for this is, for example, setting `RESPONSE_HTTP_CODE` to `301`, then you could set a header containing `Location: https://example.com/` to redirect the request.
 
-Headers can be set with the `HTTP_HEADERS` env var, and are comma separated. For example: `HTTP_HEADERS=Location: http://backup.example.com,Cache-Control: no-cache`. Be careful of extraneous quotes - See the `docker-compose.yml` file for examples.
+Headers can be set with the `RESPONSE_HTTP_HEADERS` env var, and are comma separated. For example:
+```
+RESPONSE_HTTP_HEADERS="Location: http://backup.example.com, Cache-Control: no-cache"
+```
+
+See the `docker-compose.yml` file for examples. If extraneous quotes or spaces are added, it will try to parse them.
 
 ### Response Content/Content-Type
 

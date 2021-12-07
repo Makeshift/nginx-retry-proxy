@@ -1,9 +1,9 @@
 const port = process.argv[2] ? Number(process.argv[2]) : process.env.PORT ? Number(process.env.PORT) : 8080;
 const healthcheckPath = process.env.HEALTHCHECK_PATH || '/retry-proxy/healthcheck';
 const healthcheckReplies = (process.env.HEALTHCHECK_REPLIES ? Number(process.env.HEALTHCHECK_REPLIES) : 5) * 2; // 2 because both the REQ and RES are counted as a single reply
-const statusCode = process.env.HTTP_RESPONSE_CODE ? Number(process.env.HTTP_RESPONSE_CODE) : 504;
-const headers = process.env.HTTP_HEADERS
-  ? Object.fromEntries(process.env.HTTP_HEADERS
+const statusCode = process.env.RESPONSE_HTTP_CODE ? Number(process.env.RESPONSE_HTTP_CODE) : 504;
+const headers = process.env.RESPONSE_HTTP_HEADERS
+  ? Object.fromEntries(process.env.RESPONSE_HTTP_HEADERS
     .split(',')
     .map(header => header
       .trim()
