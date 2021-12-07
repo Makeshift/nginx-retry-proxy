@@ -2,7 +2,7 @@
 
 Inspired by [this Stackexchange question](https://superuser.com/questions/746028/configuring-nginx-to-retry-a-single-upstream-server), this is a very simple little webserver that acts as a backup for when Nginx is down, and auto-refreshes the page for you.
 
-It refreshes the page by using Javascript. If the client you're using doesn't support Javascript, it's expected to retry the connection itself. The proxy will return a 504.
+It refreshes the page by using Javascript. If the client you're using doesn't support Javascript, it's expected to retry the connection itself. The proxy will return a 504 by default (See Options to change this behaviour).
 
 ## Getting Started
 
@@ -25,7 +25,7 @@ npm install
 npm start
 ```
 
-You can optionally start on a port that isn't 8080 with `npm start 80` or any other port. You can also use the environment variable `PORT`.
+See Options below for information on env vars and args.
 
 ### Nginx
 
@@ -48,6 +48,12 @@ server {
 ```
 
 See `default.conf` for the same as above. It gets dropped straight into `/etc/nginx/conf.d/default.conf`.
+
+## Options
+
+### Ports
+
+You can optionally start on a port that isn't 8080 with `npm start 80` or any other port. You can also use the environment variable `PORT`.
 
 ### Healthchecks
 
