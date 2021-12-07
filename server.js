@@ -17,6 +17,8 @@ const headers = process.env.HTTP_HEADERS
     )
   )
   : {};
+const responseType = process.env.RESPONSE_TYPE || 'text/html';
+const responseString = process.env.RESPONSE_STRING || 'The server you requested is down. Retrying...<script>setTimeout(() => window.location.reload(), 5000);</script>';
 
 const stream = require('stream');
 const pino = require('pino');
@@ -63,8 +65,8 @@ fastify.all(healthcheckPath, async (request, reply) => {
 
 fastify.all('/*', async (request, reply) => {
   console.log(headers);
-  reply.type('text/html').code(statusCode).headers(headers)
-    .send('The server you requested is down. Retrying...<script>setTimeout(() => window.location.reload(), 5000);</script>');
+  reply.type(responseType).code(statusCode).headers(headers)
+    .send(responseString);
 });
 
 const start = async () => {

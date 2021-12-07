@@ -76,3 +76,15 @@ By default, no additional headers are set (aside from those provided by default 
 A use-case for this is, for example, setting `HTTP_RESPONSE_CODE` to `301`, then you could set a header containing `Location: https://example.com/` to redirect the request.
 
 Headers can be set with the `HTTP_HEADERS` env var, and are comma separated. For example: `HTTP_HEADERS=Location: http://backup.example.com,Cache-Control: no-cache`. Be careful of extraneous quotes - See the `docker-compose.yml` file for examples.
+
+### Response Content/Content-Type
+
+By default, the response Content-Type is `text/html`. This can be changed with the `RESPONSE_TYPE` env var.
+
+The default response text is: `The server you requested is down. Retrying...<script>setTimeout(() => window.location.reload(), 5000);</script>`.
+
+This can be changed with the `RESPONSE_STRING` end var.
+
+## Tests
+
+TODO :(
