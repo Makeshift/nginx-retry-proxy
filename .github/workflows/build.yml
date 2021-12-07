@@ -66,6 +66,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Dedupe
+        run: |
+          yarn global add yarn-tools
+          yarn run dedupe
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@master
         with:
@@ -117,11 +122,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: makeshift27015/nginx-retry-proxy:latest
-      - name: Upload result to GitHub Code Scanning
-        if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: snyk.sarif
 
       - name: Login to DockerHub
         if: success()

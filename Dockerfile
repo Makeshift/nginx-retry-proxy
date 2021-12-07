@@ -4,9 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn global add yarn-tools && \
-  yarn run dedupe && \
-  yarn install --frozen-lockfile --non-interactive --production --link-duplicates
+RUN yarn install --frozen-lockfile --non-interactive --production --link-duplicates
 
 FROM m03geek/alpine-node:femto
 
