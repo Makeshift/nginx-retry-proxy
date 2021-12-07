@@ -14,8 +14,53 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+  CodeQL:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: javascript
+
+    - name: Build
+      run: |
+        yarn global add yarn-tools
+        yarn run dedupe
+        yarn install --frozen-lockfile --non-interactive --production --link-duplicates
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
+
+  njsscan:
+    runs-on: ubuntu-latest
+    name: njsscan code scanning
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+    - name: nodejsscan scan
+      id: njsscan
+      uses: ajinabraham/njsscan-action@7237412fdd36af517e2745077cedbf9d6900d711
+      with:
+        args: '. --sarif --output results.sarif || true'
+    - name: Upload njsscan report
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: results.sarif
+
   build:
     name: Build
+    depends_on:
+      - CodeQL
+      - njsscan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,17 +83,48 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
+      - name: Build
+        uses: docker/build-push-action@v2.7.0
+        with:
+          tags: makeshift27015/nginx-retry-proxy:latest
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8
+          builder: ${{ steps.buildx.outputs.name }}
+          pull: true
+          cache-from: makeshift27015/nginx-retry-proxy
 
+      - name: Anchore
+        uses: anchore/scan-action@b08527d5ae7f7dc76f9621edb6e49eaf47933ccd
+        with:
+          image: "makeshift27015/nginx-retry-proxy:latest"
+          acs-report-enable: true
+      - name: Upload Anchore Scan Report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
+      
       - name: Login to DockerHub
         uses: docker/login-action@v1.10.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v2.7.0
+      - name: Run Snyk to check Docker image for vulnerabilities
+        # Snyk can be used to break the build when it detects vulnerabilities.
+        # In this case we want to upload the issues to GitHub Code Scanning
+        continue-on-error: true
+        uses: snyk/actions/docker@14818c4695ecc4045f33c9cee9e795a788711ca4
+        env:
+          # In order to use the Snyk Action you will need to have a Snyk API token.
+          # More details in https://github.com/snyk/actions#getting-your-snyk-token
+          # or you can signup for free at https://snyk.io/login
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          push: true
-          tags: makeshift27015/nginx-retry-proxy:latest
-          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8
-          builder: ${{ steps.buildx.outputs.name }}
+          image: makeshift27015/nginx-retry-proxy:latest
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
+      
+      - name: Push Container
+        run: docker push makeshift27015/nginx-retry-proxy:latest
