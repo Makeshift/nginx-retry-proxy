@@ -58,7 +58,7 @@ jobs:
 
   build:
     name: Build
-    depends_on:
+    needs:
       - CodeQL
       - njsscan
     runs-on: ubuntu-latest
