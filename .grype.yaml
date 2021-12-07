@@ -1,0 +1,8 @@
+ignore:
+  - vulnerability: CVE-2017-18589
+    fix-state: not-fixed
+    package:
+      name: cookie
+      version: 0.4.1
+      type: npm
+      location: "/node_modules/cookie/package.json"

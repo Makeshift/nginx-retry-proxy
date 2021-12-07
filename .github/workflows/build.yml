@@ -24,20 +24,17 @@ jobs:
 
     steps:
     - name: Checkout repository
+      if: success() || failure()
       uses: actions/checkout@v2
 
     - name: Initialize CodeQL
+      if: success() || failure()
       uses: github/codeql-action/init@v1
       with:
         languages: javascript
 
-    - name: Build
-      run: |
-        yarn global add yarn-tools
-        yarn run dedupe
-        yarn install --frozen-lockfile --non-interactive --production --link-duplicates
-
     - name: Perform CodeQL Analysis
+      if: success() || failure()
       uses: github/codeql-action/analyze@v1
 
   njsscan:
@@ -45,13 +42,16 @@ jobs:
     name: njsscan code scanning
     steps:
     - name: Checkout the code
+      if: success() || failure()
       uses: actions/checkout@v2
     - name: nodejsscan scan
+      if: success() || failure()
       id: njsscan
       uses: ajinabraham/njsscan-action@7237412fdd36af517e2745077cedbf9d6900d711
       with:
         args: '. --sarif --output results.sarif || true'
     - name: Upload njsscan report
+      if: success() || failure()
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: results.sarif
@@ -93,23 +93,19 @@ jobs:
           cache-from: makeshift27015/nginx-retry-proxy
 
       - name: Anchore
+        if: success() || failure()
         uses: anchore/scan-action@b08527d5ae7f7dc76f9621edb6e49eaf47933ccd
         with:
           image: "makeshift27015/nginx-retry-proxy:latest"
           acs-report-enable: true
       - name: Upload Anchore Scan Report
-        if: always()
+        if: success() || failure()
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: results.sarif
-      
-      - name: Login to DockerHub
-        uses: docker/login-action@v1.10.0
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run Snyk to check Docker image for vulnerabilities
+        if: success() || failure()
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
         continue-on-error: true
@@ -122,9 +118,18 @@ jobs:
         with:
           image: makeshift27015/nginx-retry-proxy:latest
       - name: Upload result to GitHub Code Scanning
+        if: success() || failure()
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: snyk.sarif
-      
+
+      - name: Login to DockerHub
+        if: success()
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Push Container
+        if: success()
         run: docker push makeshift27015/nginx-retry-proxy:latest
