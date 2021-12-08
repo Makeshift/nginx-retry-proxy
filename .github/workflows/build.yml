@@ -102,6 +102,7 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
             type=sha,prefix=
+            type=sha,prefix=,format=long
 
       - name: Build
         uses: docker/build-push-action@v2.7.0
@@ -112,12 +113,13 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           pull: true
           cache-from: makeshift27015/nginx-retry-proxy
+          load: true
 
       - name: Anchore
         if: success() || failure()
         uses: anchore/scan-action@b08527d5ae7f7dc76f9621edb6e49eaf47933ccd
         with:
-          image: "makeshift27015/nginx-retry-proxy:latest"
+          image: makeshift27015/nginx-retry-proxy:${{ github.sha }}
           acs-report-enable: true
       - name: Upload Anchore Scan Report
         if: success() || failure()
@@ -134,7 +136,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: makeshift27015/nginx-retry-proxy:latest
+          image: makeshift27015/nginx-retry-proxy:${{ github.sha }}
 
       - name: Login to DockerHub
         if: success() && github.event_name != 'pull_request'
@@ -145,10 +147,4 @@ jobs:
 
       - name: Push Container
         if: success() && github.event_name != 'pull_request'
-        # This seems broken?
-        # run: docker push --all-tags makeshift27015/nginx-retry-proxy
-        run: |
-          tags="${{ steps.meta.outputs.tags }}"
-          while IFS= read -r image; do
-            docker push "$image"
-          done <<< "$tags"
+        run: docker push --all-tags makeshift27015/nginx-retry-proxy
