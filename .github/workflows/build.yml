@@ -88,10 +88,23 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: makeshift27015/nginx-retry-proxy
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=sha
+
       - name: Build
         uses: docker/build-push-action@v2.7.0
         with:
-          tags: makeshift27015/nginx-retry-proxy:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8
           builder: ${{ steps.buildx.outputs.name }}
           pull: true
@@ -116,20 +129,17 @@ jobs:
         continue-on-error: true
         uses: snyk/actions/docker@14818c4695ecc4045f33c9cee9e795a788711ca4
         env:
-          # In order to use the Snyk Action you will need to have a Snyk API token.
-          # More details in https://github.com/snyk/actions#getting-your-snyk-token
-          # or you can signup for free at https://snyk.io/login
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: makeshift27015/nginx-retry-proxy:latest
 
       - name: Login to DockerHub
-        if: success()
+        if: success() && github.event_name != 'pull_request'
         uses: docker/login-action@v1.10.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push Container
-        if: success()
-        run: docker push makeshift27015/nginx-retry-proxy:latest
+        if: success() && github.event_name != 'pull_request'
+        run: docker push -a makeshift27015/nginx-retry-proxy
