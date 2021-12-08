@@ -104,12 +104,17 @@ jobs:
             type=sha,prefix=
             type=sha,prefix=,format=long
 
-      - name: Build
+      # It's annoying (and not good practice) to a build separately for tests and build
+      #  because there's a chance that they won't be identical containers
+      #  but there's not really much that can be done about it because you can't load 
+      #  buildx manifests into Docker right now, meaning you can't use it to push later
+      # Hopefully they'll cache from this build!
+      - name: Build for Tests
         uses: docker/build-push-action@v2.7.0
         with:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8
+          platforms: linux/amd64
           builder: ${{ steps.buildx.outputs.name }}
           pull: true
           cache-from: makeshift27015/nginx-retry-proxy
@@ -147,4 +152,10 @@ jobs:
 
       - name: Push Container
         if: success() && github.event_name != 'pull_request'
-        run: docker push --all-tags makeshift27015/nginx-retry-proxy
+        uses: docker/build-push-action@v2.7.0
+        with:
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
