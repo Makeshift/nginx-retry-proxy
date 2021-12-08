@@ -148,6 +148,7 @@ jobs:
         # This seems broken?
         # run: docker push --all-tags makeshift27015/nginx-retry-proxy
         run: |
-          for image in ${{ steps.meta.outputs.tags }}; do
+          tags="${{ steps.meta.outputs.tags }}"
+          while IFS= read -r image; do
             docker push "$image"
-          done
+          done <<< "$tags"
