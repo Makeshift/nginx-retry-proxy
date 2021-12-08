@@ -88,7 +88,7 @@ By default, the response Content-Type is `text/html`. This can be changed with t
 
 The default response text is: `The server you requested is down. Retrying...<script>setTimeout(() => window.location.reload(), 5000);</script>`.
 
-This can be changed with the `RESPONSE_STRING` end var.
+This can be changed with the `RESPONSE_STRING` env var.
 
 ## Tests
 
