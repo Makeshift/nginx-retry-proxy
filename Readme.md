@@ -33,9 +33,9 @@ To use this proxy with Nginx, simply add it as a backup to your upstream, where 
 
 ```
 upstream upstream {
-  server nginx_upstream resolve;
+  server nginx_upstream;
 
-  server backup_proxy:8080 resolve backup;
+  server backup_proxy:8080 backup;
 }
 
 server {
