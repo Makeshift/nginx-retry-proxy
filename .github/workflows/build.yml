@@ -2,6 +2,9 @@ name: Build
 
 on: 
   push:
+  pull_request:
+  repository_dispatch:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'
 
@@ -142,4 +145,9 @@ jobs:
 
       - name: Push Container
         if: success() && github.event_name != 'pull_request'
-        run: docker push --all-tags makeshift27015/nginx-retry-proxy
+        # This seems broken?
+        # run: docker push --all-tags makeshift27015/nginx-retry-proxy
+        run: |
+          for image in ${{ steps.meta.outputs.tags }}; do
+            docker push "$image"
+          done
