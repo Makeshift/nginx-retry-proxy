@@ -98,7 +98,7 @@ jobs:
             type=ref,event=branch
             type=ref,event=tag
             type=ref,event=pr
-            type=sha
+            type=sha,prefix=
 
       - name: Build
         uses: docker/build-push-action@v2.7.0
@@ -142,4 +142,4 @@ jobs:
 
       - name: Push Container
         if: success() && github.event_name != 'pull_request'
-        run: docker push -a makeshift27015/nginx-retry-proxy
+        run: docker push --all-tags makeshift27015/nginx-retry-proxy
