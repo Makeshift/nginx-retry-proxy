@@ -1,0 +1,14 @@
+# This workflow creates a dummy commit to master periodically to stop GitHub from disabling cron-based builds on the repo every 60 days.
+name: Keepalive Builds
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  
+  keepalive:
+    - name: Keepalive Workflow
+      uses: gautamkrishnar/keepalive-workflow@1.0.7
