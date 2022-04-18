@@ -23,4 +23,4 @@ jobs:
         with:
           token: ${{ secrets.DISPATCH_TOKEN }}
           workflow: Build
-          ref: ${{ steps.latest.release }}
+          ref: ${{ steps.latest.outputs.release }}
