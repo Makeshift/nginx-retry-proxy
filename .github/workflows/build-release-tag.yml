@@ -1,0 +1,27 @@
+name: Build Latest Release Tag
+
+on: 
+  repository_dispatch:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+
+  build_latest_release:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Get Latest Release
+        uses: pozetroninc/github-action-get-latest-release@v0.5.0
+        id: latest
+        with:
+          owner: ${{ github.repository.owner }}
+          repo: ${{ github.repository.name }}
+
+      - name: Start Build for Tag
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.DISPATCH_TOKEN }}
+          workflow: Build
+          ref: ${{ steps.latest.release }}
