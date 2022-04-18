@@ -10,5 +10,6 @@ on:
 jobs:
   
   keepalive:
-    - name: Keepalive Workflow
-      uses: gautamkrishnar/keepalive-workflow@1.0.7
+    steps:
+      - name: Keepalive Workflow
+        uses: gautamkrishnar/keepalive-workflow@1.0.7
