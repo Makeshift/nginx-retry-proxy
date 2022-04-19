@@ -20,7 +20,7 @@
   "homepage": "https://github.com/Makeshift/nginx-retry-proxy#readme",
   "dependencies": {
     "fastify": "^3.24.1",
-    "pino": "^7.5.1"
+    "pino": "^7.6.0"
   },
   "resolutions": {
     "**/pino": "^7.5.1"
